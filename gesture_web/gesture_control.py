@@ -10,8 +10,8 @@ pyautogui.FAILSAFE = False
 
 print("Gesture Control Started")
 
-model = tf.keras.models.load_model("gesture_web/model/hand_gesture_model.keras")
-labels = np.load("gesture_web/model/label_encoder.npy", allow_pickle=True)
+model = tf.keras.models.load_model("model/hand_gesture_model.keras")
+labels = np.load("model/label_encoder.npy", allow_pickle=True)
 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.6)

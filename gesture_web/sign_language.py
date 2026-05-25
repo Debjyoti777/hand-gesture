@@ -5,7 +5,7 @@ import tensorflow as tf
 
 # Load trained dynamic model
 model = tf.keras.models.load_model(
-    "gesture_web/model/dynamic_sign_model.keras"
+    "gesture_web/model/dynamic_sign_model.h5"
 )
 
 labels = np.load(
