@@ -1,0 +1,17 @@
+venv/
+.venv/
+
+__pycache__/
+*.pyc
+
+wlasl_dataset/
+filtered_wlasl/
+sorted_wlasl/
+
+.idea/
+
+*.mp4
+*.avi
+
+dynamic_sign_data.npy
+sign_landmarks_data.npy

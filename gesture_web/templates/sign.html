@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Sign Language</title>
+<link rel="stylesheet" href="/static/css/style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🤟 Sign Language Translator</h2>
+
+<p>Click below to start sign language detection</p>
+
+<button onclick="startSign()">Start Sign Language</button>
+
+<script>
+function startSign(){
+    fetch("/sign")
+}
+</script>
+
+</div>
+
+</body>
+</html>

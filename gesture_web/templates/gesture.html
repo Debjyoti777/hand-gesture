@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Gesture Prediction</title>
+<link rel="stylesheet" href="/static/css/style.css">
+
+<style>
+
+#historyBox{
+width:640px;
+margin-top:20px;
+background:#ffffff22;
+padding:15px;
+border-radius:10px;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>✋ Gesture Prediction</h2>
+<p>Click below to start webcam</p>
+
+<button onclick="startCamera()">Start Camera</button>
+
+<br><br>
+
+<img id="videoFeed" width="640">
+
+<div id="historyBox">
+
+<h3>Detected Gestures</h3>
+
+<ul id="gestureList"></ul>
+
+</div>
+
+</div>
+
+<script>
+
+function startCamera(){
+
+document.getElementById("videoFeed").src="/video_feed"
+
+setInterval(updateHistory,1000)
+
+}
+
+function updateHistory(){
+
+fetch("/gesture_history")
+.then(res=>res.json())
+.then(data=>{
+
+let list=document.getElementById("gestureList")
+
+list.innerHTML=""
+
+data.forEach(g=>{
+
+let li=document.createElement("li")
+li.textContent=g
+list.appendChild(li)
+
+})
+
+})
+
+}
+
+</script>
+
+</body>
+</html>

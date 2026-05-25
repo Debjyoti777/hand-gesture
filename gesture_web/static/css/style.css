@@ -1,0 +1,31 @@
+body{
+
+background: linear-gradient(120deg,#4f46e5,#9333ea);
+font-family: Arial;
+color:white;
+text-align:center;
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+
+}
+
+.container{
+
+background: rgba(255,255,255,0.15);
+padding:40px;
+border-radius:20px;
+
+}
+
+button{
+
+padding:12px 25px;
+margin:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+
+}

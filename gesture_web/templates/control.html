@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Gesture Control</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🎮 Gesture Control</h2>
+
+<p>Use hand gestures to control your system.</p>
+
+<button onclick="startControl()">Start Gesture Control</button>
+
+<button onclick="stopControl()">Stop Gesture Control</button>
+
+</div>
+
+<script>
+
+function startControl(){
+
+fetch("/start_control")
+
+}
+
+function stopControl(){
+
+fetch("/stop_control")
+
+}
+
+</script>
+
+</body>
+</html>
