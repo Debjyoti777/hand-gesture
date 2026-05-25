@@ -1,7 +1,7 @@
 import tensorflow as tf
 
-model = tf.keras.models.load_model("hand_gesture_model.keras")
+model = tf.keras.models.load_model("dynamic_sign_model.keras")
 
-model.save("hand_gesture_model.h5")
+model.save("dynamic_sign_model.h5")
 
 print("Converted!")
