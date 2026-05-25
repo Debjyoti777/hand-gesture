@@ -5,11 +5,11 @@ import tensorflow as tf
 
 # Load trained dynamic model
 model = tf.keras.models.load_model(
-    "sign_model/dynamic_sign_model.keras"
+    "model/dynamic_sign_model.keras"
 )
 
 labels = np.load(
-    "sign_model/dynamic_sign_labels.npy",
+    "model/dynamic_sign_labels.npy",
     allow_pickle=True
 )
 
