@@ -1,39 +1,48 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>Gesture Control</title>
-<link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture Control</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-<div class="container">
+<div class="container module-page">
 
-<h2>🎮 Gesture Control</h2>
+    <h1 style="color: white;">Gesture Control</h1>
 
-<p>Use hand gestures to control your system.</p>
+    <p style="color: white;">
+        Use hand gestures to control your system in real time.
+    </p>
 
-<button onclick="startControl()">Start Gesture Control</button>
+    <div class="controls">
+        <button onclick="startControl()">
+            Start Control
+        </button>
 
-<button onclick="stopControl()">Stop Gesture Control</button>
+        <button onclick="stopControl()">
+            Stop Control
+        </button>
+
+        <button onclick="window.location.href='/dashboard'">
+            Dashboard
+        </button>
+    </div>
 
 </div>
 
 <script>
-
 function startControl(){
-
-fetch("/start_control")
-
+    fetch("/start_control");
 }
 
 function stopControl(){
-
-fetch("/stop_control")
-
+    fetch("/stop_control");
 }
-
 </script>
 
 </body>

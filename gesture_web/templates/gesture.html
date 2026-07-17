@@ -8,12 +8,29 @@
 <style>
 
 #historyBox{
-width:640px;
-margin-top:20px;
-background:#ffffff22;
-padding:15px;
-border-radius:10px;
-color:white;
+    width:640px;
+    margin-top:20px;
+    background:#ffffff22;
+    padding:15px;
+    border-radius:10px;
+    color:white;
+}
+
+#gestureList{
+    list-style:none;
+    padding:0;
+}
+
+#gestureList li{
+    padding:5px;
+    margin:5px;
+    background:#ffffff22;
+    border-radius:5px;
+}
+
+.camera-container img{
+    width:640px;
+    border-radius:15px;
 }
 
 </style>
@@ -22,56 +39,148 @@ color:white;
 
 <body>
 
-<div class="container">
+<div class="module-page">
 
-<h2>✋ Gesture Prediction</h2>
-<p>Click below to start webcam</p>
+    <h1 style="color: white;">Gesture Prediction</h1>
 
-<button onclick="startCamera()">Start Camera</button>
+    <p style="color: white;">
+        Detects and classifies static hand gestures
+        in real time.
+    </p>
 
-<br><br>
+    <div class="controls">
 
-<img id="videoFeed" width="640">
+        <button id="startBtn">
+            Start Camera
+        </button>
 
-<div id="historyBox">
+        <button id="stopBtn">
+            Stop Camera
+        </button>
 
-<h3>Detected Gestures</h3>
+        <a href="/dashboard">
+            <button>
+                Dashboard
+            </button>
+        </a>
 
-<ul id="gestureList"></ul>
+    </div>
 
-</div>
+    <div class="camera-container">
+
+        <img
+            id="videoFeed"
+            src=""
+        >
+
+    </div>
+
+    <div class="stats-row">
+
+        <div class="stat-card">
+            <h3>Camera:</h3>
+            <p id="cameraStatus">Offline</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Prediction:</h3>
+            <p id="predictionText">None</p>
+        </div>
+
+    </div>
 
 </div>
 
 <script>
 
+let historyInterval = null;
+let predictionInterval = null;
+
+document.getElementById("startBtn").onclick = startCamera;
+document.getElementById("stopBtn").onclick = stopCamera;
+
 function startCamera(){
 
-document.getElementById("videoFeed").src="/video_feed"
+    document.getElementById(
+        "videoFeed"
+    ).src="/video_feed";
 
-setInterval(updateHistory,1000)
+    document.getElementById(
+        "cameraStatus"
+    ).textContent="Online";
 
+    historyInterval = setInterval(
+        updateHistory,
+        1000
+    );
+
+    predictionInterval = setInterval(
+        updatePrediction,
+        500
+    );
+}
+
+function stopCamera(){
+
+    document.getElementById(
+        "videoFeed"
+    ).src="";
+
+    document.getElementById(
+        "cameraStatus"
+    ).textContent="Offline";
+
+    clearInterval(historyInterval);
+    clearInterval(predictionInterval);
 }
 
 function updateHistory(){
 
-fetch("/gesture_history")
-.then(res=>res.json())
-.then(data=>{
+    fetch("/gesture_history")
+    .then(res => res.json())
+    .then(data => {
 
-let list=document.getElementById("gestureList")
+        let list =
+            document.getElementById(
+                "gestureList"
+            );
 
-list.innerHTML=""
+        list.innerHTML = "";
 
-data.forEach(g=>{
+        data.forEach(g => {
 
-let li=document.createElement("li")
-li.textContent=g
-list.appendChild(li)
+            let li =
+                document.createElement(
+                    "li"
+                );
 
-})
+            li.textContent = g;
 
-})
+            list.appendChild(li);
+
+        });
+
+    });
+
+}
+
+function updatePrediction(){
+
+    fetch("/current_prediction")
+    .then(res => res.json())
+    .then(data => {
+
+        document.getElementById(
+            "predictionText"
+        ).textContent =
+            data.prediction;
+
+        document.getElementById(
+            "gestureCount"
+        ).textContent =
+            data.count;
+
+    });
 
 }
 

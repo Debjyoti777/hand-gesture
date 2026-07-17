@@ -8,6 +8,9 @@ import tensorflow as tf
 import subprocess
 from collections import deque
 
+current_prediction = "None"
+gesture_history = []
+
 app = Flask(__name__)
 
 # ----------------------------
@@ -43,6 +46,10 @@ def normalize(points):
 def home():
     return render_template("index.html")
 
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
 @app.route("/gesture")
 def gesture():
     return render_template("gesture.html")
@@ -51,17 +58,27 @@ def gesture():
 def control():
     return render_template("control.html")
 
+@app.route("/mouse")
+def mouse():
+    return render_template("mouse.html")
+
 @app.route("/sign")
 def sign():
-    from sign_language import run_sign_language
-    run_sign_language()
     return render_template("sign.html")
+
+@app.route("/presentation")
+def presentation():
+    return render_template("presentation.html")
+
+
 
 # ----------------------------
 # Camera Stream
 # ----------------------------
 
 def generate_frames():
+
+    global current_prediction
 
     cap = cv2.VideoCapture(0)
 
@@ -99,11 +116,13 @@ def generate_frames():
 
                 confidence=np.max(prediction)
 
-                if confidence>0.6:
+                if confidence > 0.6:
 
-                    gesture=labels[np.argmax(prediction)]
+                    gesture = labels[np.argmax(prediction)]
 
-                    text=f"{gesture} ({confidence:.2f})"
+                    text = f"{gesture} ({confidence:.2f})"
+
+                    current_prediction = gesture
 
                     gesture_history.appendleft(gesture)
 
@@ -126,34 +145,186 @@ def video_feed():
 # Gesture Control
 # ----------------------------
 
-process=None
+
+control_process = None
 
 @app.route("/start_control")
 def start_control():
 
-    global process
+    global control_process
 
-    if process is None:
-        process = subprocess.Popen(["../venv/Scripts/python.exe", "gesture_control.py"])
+    if control_process is None:
+
+        python_path = os.path.abspath(
+            "../.venv/Scripts/python.exe"
+        )
+
+        script_path = os.path.abspath(
+            "gesture_control.py"
+        )
+
+        control_process = subprocess.Popen(
+            [python_path, script_path]
+        )
 
     return "Gesture Control Started"
+
 
 @app.route("/stop_control")
 def stop_control():
 
-    global process
+    global control_process
 
-    if process:
-        process.terminate()
-        process=None
+    if control_process:
+        control_process.terminate()
+        control_process = None
 
     return "Gesture Control Stopped"
 
+
+
+mouse_process = None
+
+
+
+
+@app.route("/start_mouse")
+def start_mouse():
+
+    global mouse_process
+
+    if mouse_process is None:
+
+        python_path = os.path.abspath(
+            "../.venv/Scripts/python.exe"
+        )
+
+        script_path = os.path.abspath(
+            "run_virtual_mouse.py"
+        )
+
+        mouse_process = subprocess.Popen(
+            [python_path, script_path]
+        )
+
+    return "Virtual Mouse Started"
+
+
+@app.route("/stop_mouse")
+def stop_mouse():
+
+    global mouse_process
+
+    if mouse_process:
+        mouse_process.terminate()
+        mouse_process = None
+
+    return "Virtual Mouse Stopped"
+
+
+
 # ----------------------------
+# Sign Language
+# ----------------------------
+
+sign_process = None
+
+
+@app.route("/start_sign")
+def start_sign():
+
+    global sign_process
+
+    if sign_process is None:
+
+        python_path = os.path.abspath(
+            "../.venv/Scripts/python.exe"
+        )
+
+        script_path = os.path.abspath(
+            "run_sign.py"
+        )
+
+        sign_process = subprocess.Popen(
+            [python_path, script_path]
+        )
+
+    return "Sign Language Started"
+
+
+@app.route("/stop_sign")
+def stop_sign():
+
+    global sign_process
+
+    if sign_process:
+        sign_process.terminate()
+        sign_process = None
+
+    return "Sign Language Stopped"
+
+
+
+presentation_process = None
+
+@app.route("/start_presentation")
+def start_presentation():
+
+    global presentation_process
+
+    if presentation_process is None:
+
+        python_path = os.path.abspath(
+            "../.venv/Scripts/python.exe"
+        )
+
+        script_path = os.path.abspath(
+            "run_presentation.py"
+        )
+
+        presentation_process = subprocess.Popen(
+            [python_path, script_path]
+        )
+
+    return "Presentation Tool Started"
+
+@app.route("/stop_presentation")
+def stop_presentation():
+
+    global presentation_process
+
+    if presentation_process:
+        presentation_process.terminate()
+        presentation_process = None
+
+    return "Presentation Tool Stopped"
+
+
 
 @app.route("/gesture_history")
 def get_gesture_history():
     return jsonify(list(gesture_history))
+
+@app.route("/current_prediction")
+def current_prediction_api():
+
+    return jsonify(
+        {
+            "prediction":
+                current_prediction,
+
+            "count":
+                len(gesture_history)
+        }
+    )
+
+@app.route("/gesture_history")
+def history():
+
+    return jsonify(
+        gesture_history[-20:]
+    )
+
 
 # ----------------------------
 

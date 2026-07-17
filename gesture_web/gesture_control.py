@@ -10,26 +10,50 @@ pyautogui.FAILSAFE = False
 
 print("Gesture Control Started")
 
+# ---------------- LOAD MODEL ----------------
+
 model = tf.keras.models.load_model("model/hand_gesture_model.keras")
-labels = np.load("model/label_encoder.npy", allow_pickle=True)
+
+labels = np.load(
+    "model/label_encoder.npy",
+    allow_pickle=True
+)
+
+# ---------------- MEDIAPIPE ----------------
 
 mp_hands = mp.solutions.hands
-hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.6)
+
+hands = mp_hands.Hands(
+    max_num_hands=1,
+    min_detection_confidence=0.6
+)
+
+mp_draw = mp.solutions.drawing_utils
+
+# ---------------- BUFFER ----------------
 
 gesture_buffer = deque(maxlen=5)
 
 last_action_time = 0
-cooldown = 1
 
+cooldown = 2
+
+# ---------------- NORMALIZE ----------------
 
 def normalize(points):
+
     pts = np.array(points).reshape(21, 2)
+
     pts = pts - pts[0]
+
     m = np.max(np.abs(pts))
+
     if m != 0:
         pts = pts / m
+
     return pts.flatten()
 
+# ---------------- ACTIONS ----------------
 
 def perform_action(gesture):
 
@@ -63,26 +87,41 @@ def perform_action(gesture):
 
     last_action_time = time.time()
 
+# ---------------- CAMERA ----------------
 
 cam = cv2.VideoCapture(0)
 
-# Create preview window once
+# ---------------- POPUP WINDOW ----------------
+
 cv2.namedWindow("Gesture Control", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Gesture Control", 240,180)
-cv2.moveWindow("Gesture Control", 1200,650)
-cv2.setWindowProperty("Gesture Control", cv2.WND_PROP_TOPMOST, 1)
+
+cv2.resizeWindow("Gesture Control", 320, 240)
+
+cv2.moveWindow("Gesture Control", 1200, 650)
+
+cv2.setWindowProperty(
+    "Gesture Control",
+    cv2.WND_PROP_TOPMOST,
+    1
+)
 
 print("Gesture Control Running...")
+
+# ---------------- MAIN LOOP ----------------
 
 while True:
 
     ret, frame = cam.read()
+
     if not ret:
         continue
 
     frame = cv2.flip(frame, 1)
 
-    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    rgb = cv2.cvtColor(
+        frame,
+        cv2.COLOR_BGR2RGB
+    )
 
     result = hands.process(rgb)
 
@@ -90,9 +129,16 @@ while True:
 
         hand = result.multi_hand_landmarks[0]
 
+        mp_draw.draw_landmarks(
+            frame,
+            hand,
+            mp_hands.HAND_CONNECTIONS
+        )
+
         points = []
 
         for lm in hand.landmark:
+
             points.append(lm.x)
             points.append(lm.y)
 
@@ -111,38 +157,37 @@ while True:
 
                 gesture_buffer.append(gesture)
 
-                stable_gesture = max(set(gesture_buffer), key=gesture_buffer.count)
-
-                # Show detected gesture on camera
-                cv2.putText(frame, stable_gesture, (20,40),
-                    cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2)
+                stable_gesture = max(
+                    set(gesture_buffer),
+                    key=gesture_buffer.count
+                )
 
                 perform_action(stable_gesture)
 
-    # ---------------- MINI CAMERA PREVIEW ----------------
+                cv2.putText(
+                    frame,
+                    f"{stable_gesture} ({confidence:.2f})",
+                    (20, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1,
+                    (0,255,0),
+                    2
+                )
 
-    mini_frame = cv2.resize(frame, (220, 160))
+    # ---------------- MINI POPUP ----------------
 
-    cv2.imshow("Gesture Control", mini_frame)
-
-    # Move the window to bottom-right (adjust if needed)
-    cv2.moveWindow("Gesture Control", 1200, 650)
-
-    # Press ESC to exit
-    if cv2.waitKey(1) & 0xFF == 27:
-        break
-
-    # -------- MINI CAMERA PREVIEW --------
-
-    mini_frame = cv2.resize(frame, (240,180))
+    mini_frame = cv2.resize(frame, (320,240))
 
     cv2.imshow("Gesture Control", mini_frame)
 
-    # Press ESC to exit
+    # ESC key to exit
     if cv2.waitKey(1) & 0xFF == 27:
         break
 
-time.sleep(0.01)
+    time.sleep(0.01)
+
+# ---------------- CLEANUP ----------------
 
 cam.release()
+
 cv2.destroyAllWindows()

@@ -1,29 +1,70 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
-<title>Sign Language</title>
-<link rel="stylesheet" href="/static/css/style.css">
+    <title>Sign Language</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
 
 </head>
 
 <body>
 
-<div class="container">
+<div class="container module-page">
 
-<h2>🤟 Sign Language Translator</h2>
+    <h1 style="color: white;">Sign Language Translator</h1>
 
-<p>Click below to start sign language detection</p>
+    <p style="color: white;">
+        Click below to start Sign Language Detection
+    </p>
 
-<button onclick="startSign()">Start Sign Language</button>
+    <div class="divider"></div>
 
-<script>
-function startSign(){
-    fetch("/sign")
-}
-</script>
+    <div class="controls">
+
+        <button onclick="startSign()">
+            Start Sign Language
+        </button>
+
+        <button onclick="stopSign()">
+            Stop Sign Language
+        </button>
+
+        <button onclick="window.location.href='/dashboard'">
+            Dashboard
+        </button>
+
+    </div>
 
 </div>
 
+<script>
+
+function startSign(){
+
+    fetch("/start_sign");
+
+    const container = document.getElementById("signContainer");
+    const feed = document.getElementById("signFeed");
+
+    feed.src = "/sign_feed";
+    container.style.display = "flex";
+}
+
+function stopSign(){
+
+    fetch("/stop_sign");
+
+    const container = document.getElementById("signContainer");
+    const feed = document.getElementById("signFeed");
+
+    feed.src = "";
+    container.style.display = "none";
+}
+
+</script>
+
 </body>
+
 </html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Presentation Tool</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+</head>
+
+<body>
+
+<div class="container module-page">
+
+    <h1 style="color: white;">Air Pen</h1>
+
+    <p style="color: white;">
+        Draw and make free hand structures using hand gestures.
+    </p>
+
+    <div class="controls">
+
+        <button onclick="startPresentation()">
+            Start Game
+        </button>
+
+        <button onclick="stopPresentation()">
+            Stop Game
+        </button>
+
+        <button onclick="window.location.href='/dashboard'">
+            Dashboard
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+function startPresentation(){
+    fetch("/start_presentation");
+}
+
+function stopPresentation(){
+    fetch("/stop_presentation");
+}
+
+</script>
+
+</body>
+</html>

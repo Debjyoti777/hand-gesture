@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Virtual Mouse</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+</head>
+
+<body>
+
+<div class="container module-page">
+
+    <h1 style="color: white;">Virtual Mouse</h1>
+
+    <p style="color: white;">
+        Controls your mouse using hand gestures.
+    </p>
+
+    <div class="controls">
+
+        <button onclick="startMouse()">
+            Start Virtual Mouse
+        </button>
+
+        <button onclick="stopMouse()">
+            Stop Virtual Mouse
+        </button>
+
+        <button onclick="window.location.href='/dashboard'">
+            Dashboard
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+function startMouse(){
+    fetch("/start_mouse");
+}
+
+function stopMouse(){
+    fetch("/stop_mouse");
+}
+
+</script>
+
+</body>
+</html>
